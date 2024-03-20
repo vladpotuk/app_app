@@ -1,7 +1,7 @@
 ﻿using System;
 
 class Program
-{
+{      
     static void Main(string[] args)
     {
         Action<string> displayMessage = message => Console.WriteLine(message);
