@@ -2,26 +2,46 @@
 
 class Program
 {
-    static void Main(string[] args)
+    static void Main()
     {
-        CreditCard card = new CreditCard("1234 5678 9012 3456", "John Doe", DateTime.Now.AddYears(3), "1234", 5000);
+        
+        CreditCard card = User.EnterCreditCardData();
 
         
-        card.AccountReplenished += amount => Console.WriteLine($"Рахунок поповнено на {amount} грн");
-        card.MoneySpent += amount => Console.WriteLine($"З рахунку списано {amount} грн");
-        card.CreditStarted += () => Console.WriteLine("Початок використання кредитних коштів");
-        card.LimitReached += balance => Console.WriteLine($"Досягнуто ліміт кредиту: {balance} грн");
-        card.PINChanged += newPIN => Console.WriteLine($"PIN змінено на {newPIN}");
+        Action<double> topUpAction = card.TopUp;
+        Action<double> spendAction = card.Spend;
+        Action startUsingCreditAction = card.StartUsingCredit;
+        Predicate<double> isLimitReachedPredicate = card.IsLimitReached;
+        Action<int> changePINAction = card.ChangePIN;
 
         
-        card.ReplenishAccount(1000);
+        Console.Write("Введіть суму для поповнення рахунку: ");
+        double topUpAmount = double.Parse(Console.ReadLine());
+        topUpAction(topUpAmount);
+
+       
+        Console.Write("Введіть суму для витрати з рахунку: ");
+        double spendAmount = double.Parse(Console.ReadLine());
+        spendAction(spendAmount);
+
         
-        card.SpendMoney(500);
+        startUsingCreditAction();
+
         
-        card.StartCredit();
+        Console.Write("Введіть суму для перевірки ліміту: ");
+        double checkAmount = double.Parse(Console.ReadLine());
+        if (isLimitReachedPredicate(checkAmount))
+        {
+            Console.WriteLine("Досягнуто ліміту кредитних коштів!");
+        }
+        else
+        {
+            Console.WriteLine("Ліміт кредитних коштів не досягнуто.");
+        }
+
         
-        card.ChangePIN("5678");
-        
-        card.CheckLimit();
+        Console.Write("Введіть новий PIN: ");
+        int newPIN = int.Parse(Console.ReadLine());
+        changePINAction(newPIN);
     }
 }
